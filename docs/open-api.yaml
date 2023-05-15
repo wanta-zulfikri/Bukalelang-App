@@ -1,0 +1,1685 @@
+openapi: 3.0.3
+
+info:
+  title: BukaLelang App RESTful API Project
+  version: 1.0.0
+  description: The BukaLelang App RESTful API Project is an application used for creating and managing bukalelang.
+  contact:
+    name: Developer 
+    email: wantazulfikri12@gmail.com
+
+externalDocs:
+  description: Visit the BukaLelang-App GitHub repository for more information.
+  url: https://github.com/wanta-zulfikri/BukaLelang-App.git
+
+servers:
+  # Added by API Auto Mocking Plugin
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/wanta-zulfikri/Event-App/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/wanta-zulfikri/BukaLelangAppRESTfulAPI/1.0.1
+  - description: Production
+    url: https://
+  - description: Demo
+    url: http://public_ip
+  - description: Testing
+    url: https://localhost:8080
+
+paths:
+  /register:
+    post:
+      tags:
+        - Authentication
+      summary: Register user
+      description: Endpoint register new user to the database
+      requestBody:
+          $ref: '#/components/requestBodies/RequestRegisterUser'
+      responses:
+        '201':
+          $ref: '#/components/responses/Response201Register'  
+        '400':
+          $ref: '#/components/responses/Response400'
+        '500':
+          $ref: '#/components/responses/Response500'
+
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Endpoint login user to the web-application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+            examples:
+              example1:
+                summary: Example login user id 1
+                value:
+                  email: "peterzalai@gmail.com"
+                  password: "@Secret123"
+              example2:
+                summary: Example login user id 2
+                value:
+                  email: "satriowibowo@gmail.com"
+                  password: "@Secret123"
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200Login'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '404':
+          $ref: '#/components/responses/Response404Login'
+        '500':
+          $ref: '#/components/responses/Response500'
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get user profile by ID
+      description: Get user information by their ID
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200UserGet'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth : []
+
+    put:
+      tags:
+        - Users
+      summary: Update user profile by ID
+      description: Update user information by their ID
+      requestBody:
+        $ref: '#/components/requestBodies/RequestUpdateUser'
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200UserUpdate'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth : []
+
+    delete:
+      tags:
+        - Users
+      summary: Delete user profile by ID
+      description: Delete user information by their ID
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200UserDelete'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'  
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth: []
+
+  /users/lelangs:
+    get:
+        tags:
+          - Users
+        summary: Get list of lelangs owned by user ID
+        description: Get list of lelangs owned by userid on an user profile with pagination
+        parameters:
+          - in: query
+            name: page
+            schema:
+              type: integer
+            description: The page number to retrieve
+            required: false
+        responses:
+          '200':
+            $ref: '#/components/responses/Response200LelangListGet'
+          '400':
+            $ref: '#/components/responses/Response400'
+          '401':
+            $ref: '#/components/responses/Response401'
+          '404':
+            $ref: '#/components/responses/Response404'
+          '500':
+            $ref: '#/components/responses/Response500'
+        security: 
+          - bearerAuth: []
+
+  /users/history:
+    get:
+        tags:
+          - Users
+        summary: Get list of lelangs history by user ID
+        description: Get list of events attended by userid on an user profile with pagination
+        parameters:
+          - in: query
+            name: page
+            schema:
+              type: integer
+            description: The page number to retrieve
+            required: false
+        responses:
+          '200':
+            $ref: '#/components/responses/Response200LelangListGet'
+          '400':
+            $ref: '#/components/responses/Response400'
+          '401':
+            $ref: '#/components/responses/Response401'
+          '404':
+            $ref: '#/components/responses/Response404'
+          '500':
+            $ref: '#/components/responses/Response500'
+        security: 
+          - bearerAuth: []
+
+  /lelang:
+    get:
+      tags:
+        - Lelang
+      summary: Get list of lelangs with pagination
+      description: Get list of lelang on the database
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: The string value of category to retrieve spesific list of category lelang
+          required: false
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number to retrieve
+          required: false
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200LelangListGet'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+
+    post:
+      tags:
+        - Lelang
+      summary: Create a new lelang include with its bid
+      description: Endpoint create a new lelang include with its bid to the web-application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LelangCreate"
+      responses:
+        '201':
+          $ref: '#/components/responses/Response201LelangCreate'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth: []
+    
+  /lelang/{id}:
+    get:
+      tags:
+        - Lelang
+      summary: Get an lelang by ID include its & history
+      description: Get an event by their ID include its & history  on the database
+      parameters:
+        - name: id
+          in: path
+          description: Lelang ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200LelangGet'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+
+    put: 
+      tags: 
+        - Lelang
+      summary: Update an lelang by ID 
+      security: 
+        - bearerAuth: [] 
+      parameters:
+        - name: id
+          in: path
+          description: Lelang ID
+          required: true
+          schema:
+            type: integer
+      requestBody: 
+        description: The updated lelang 
+        required: true 
+        content: 
+          multipart/form-data: 
+            schema:
+              $ref: "#/components/schemas/LelangUpdate" 
+      responses: 
+          '200': 
+            $ref: "#/components/responses/Response200LelangUpdate" 
+          '400': 
+            $ref: "#/components/responses/Response400"
+          '401':
+            $ref: "#/components/responses/Response401"
+          '404': 
+            description: lelang not found 
+            content: 
+              application/json: 
+                schema: 
+                  type: object 
+                  properties: 
+                    message: 
+                      type: string 
+                  example: 
+                    message: "lelang not found" 
+          '500': 
+            $ref: "#/components/responses/Response500"
+
+    delete:
+      tags:
+        - Lelang
+      summary: Delete an lelang by ID
+      description: Delete event information by lelang ID
+      parameters:
+        - name: id
+          in: path
+          description: Lelang ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200': 
+          description: Success deleting lelang  
+          content: 
+            application/json: 
+              schema: 
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Success deleted an lelang"
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'  
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth: []
+    
+  /bid/{id}:
+    get:
+        tags:
+          - Bid
+        summary: Get list bids by lelang ID
+        description: Get list bids by lelang ID on the database
+        parameters:
+          - name: id
+            in: path
+            description: Lelang ID
+            required: true
+            schema:
+              type: integer
+        responses:
+          '200':
+            $ref: '#/components/responses/Response200BidGet'
+          '400':
+            $ref: '#/components/responses/Response400'
+          '401':
+            $ref: '#/components/responses/Response401'
+          '404':
+            $ref: '#/components/responses/Response404'
+          '500':
+            $ref: '#/components/responses/Response500'
+        security:
+          - bearerAuth : []
+
+    put: 
+      tags: 
+        - Bid
+      summary: Update an bids by lelang ID 
+      security: 
+        - bearerAuth: [] 
+      parameters:
+        - name: id
+          in: path
+          description: Lelang ID
+          required: true
+          schema:
+            type: integer
+      requestBody: 
+        description: The updated lelang 
+        required: true 
+        content: 
+          multipart/form-data: 
+            schema:
+              $ref: "#/components/schemas/BidUpdate" 
+      responses: 
+          '200': 
+            $ref: "#/components/responses/Response200BidUpdate" 
+          '400': 
+            $ref: "#/components/responses/Response400"
+          '401':
+            $ref: "#/components/responses/Response401"
+          '404': 
+            description: Lelang not found 
+            content: 
+              application/json: 
+                schema: 
+                  type: object 
+                  properties: 
+                    message: 
+                      type: string 
+                  example: 
+                    message: "Lelang not found" 
+          '500': 
+            $ref: "#/components/responses/Response500"
+    
+    delete:
+      tags:
+        - Bid
+      summary: Delete an bids by lelang ID
+      description: Delete ticket information by lelang ID
+      parameters:
+        - name: id
+          in: path
+          description: Bid ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200': 
+          description: Success deleting lelang  
+          content: 
+            application/json: 
+              schema: 
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Success Deleted a Bid"
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'  
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth: []
+
+  /transactions:
+    post:
+      tags:
+        - Transactions
+      summary: Create transaction for an event
+      description: Endpoint to create a new transaction for an event
+      requestBody:
+          $ref: '#/components/requestBodies/RequestTransactionCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/Response201TransactionCreate'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth : []
+
+  /transactions/{id}:  
+    get:
+      tags:
+        - Transactions
+      summary: Get transactions for an event by invoice
+      description: Endpoint to get transaction detail for an event by invoice
+      parameters:
+        - name: id
+          in: path
+          description: Invoice
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200TransactionGet'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth : []
+
+  /payments:
+    post:
+      tags:
+        - Transactions
+      summary: Create a payment for an event that user has already booked
+      description: Endpoint to create a payment for an event that user has already booked
+      requestBody:
+          $ref: '#/components/requestBodies/RequestPaymentCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/Response200PaymentCreate'
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth : []
+
+  /history/{id}:
+    post:
+      tags:
+        - History   
+      summary: Write a history
+      description: Write a history on a single lelang's page
+      parameters:
+      - name: id
+        in: path
+        description: Lelang ID
+        required: true
+        schema:
+          type: integer
+      requestBody:
+          $ref: '#/components/requestBodies/RequestHistoryCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/Response201HistoryCreate'  
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth : []
+
+    put:
+      tags:
+        - History
+      summary: Update a history
+      description: Update an existing history on a single lelang's page
+      parameters:
+        - name: id
+          in: path
+          description: History ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+          $ref: '#/components/requestBodies/RequestHistoryEdit'
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200HistoryEdit'  
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth : []
+
+    delete:
+      tags:
+        - History
+      summary: Delete a history
+      description: Delete an existing history on a single lelang's page
+      parameters:
+        - name: id
+          in: path
+          description: History ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200HistoryDelete'  
+        '400':
+          $ref: '#/components/responses/Response400'
+        '401':
+          $ref: '#/components/responses/Response401'
+        '404':
+          $ref: '#/components/responses/Response404'
+        '500':
+          $ref: '#/components/responses/Response500'
+      security:
+        - bearerAuth : []
+
+components: 
+  securitySchemes:  
+    bearerAuth:           
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Token obtained upon successful login"
+
+  requestBodies:
+    
+    RequestRegisterUser:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserRegister'
+
+    RequestLoginUser:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/UserLogin' 
+    
+    RequestUpdateUser:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/UserUpdate'
+
+    RequestTransactionCreate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RequestTransactionCreate'
+
+    RequestPaymentCreate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RequestPaymentCreate'
+
+    RequestHistoryCreate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RequestHistoryCreate'
+
+    RequestHistoryEdit:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RequestHistoryEdit'
+
+  responses:
+    Response200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: "Successful operation"
+    
+    Response201:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 201
+              message:
+                type: string
+                example: "Successful operation"
+
+    Response201Register:
+      description: Successful registration
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 201
+              message:
+                type: string
+                example: "Success Created an Account"
+
+    Response200Login:
+      description: Successful login
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+              token:
+                type: string
+            example: 
+              code: 200
+              message: "Successful login, please use this token for further access."
+              data:
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBldGVyemFsYWlAZ21haWwuY29tIiwicGFzc3dvcmQiOiJAU2VjcmV0MTIzIn0.BZq48TAx5wci2LH48KW5geslrGR2ybr0-5Wol-HyDkI"
+          examples:
+            Example login user id 1:
+              value:
+                code: 200
+                message: "Successful login, please use this token for further access."
+                data:
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBldGVyemFsYWlAZ21haWwuY29tIiwicGFzc3dvcmQiOiJAU2VjcmV0MTIzIn0.BZq48TAx5wci2LH48KW5geslrGR2ybr0-5Wol-HyDkI"
+            Example login user id 2:
+              value:
+                code: 200
+                message: "Successful login, please use this token for further access."
+                data:
+                  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5ib2FzdEBnbWFpbC5jb20iLCJwYXNzd29yZCI6IiRzYW1wbGUxMjMifQ.1Tq3XNnmNcv_cFZ0YdBUV8juv0x26bV7jK00aUOQ6U0"
+    
+    Response200UserGet:    
+          description: Get user profile information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                example 1:
+                  summary: Example user id 1
+                  value:
+                    code: 200
+                    message: "Successful Operation"
+                    data:
+                      username: "peterzalai"
+                      email: "peterzalai@gmail.com"
+                      phone: "+6281235288543"
+                      password: "@Secret123"
+                      image: "peterzalai.png"
+                example 2:
+                  summary: Example user id 2
+                  value:
+                    code: 200
+                    message: "Successful Operation"
+                    data:
+                      username: "satriowibowo"
+                      email: "satriowibowo@gmail.com"
+                      phone: "+6281235288543"
+                      password: "@Secret123"
+                      image: "satriowibowo.png"
+                example 3:
+                  summary: Example user id 3
+                  value:
+                    code: 200
+                    message: "Successful Operation"
+                    data:
+                      username: "wantazulfikri"
+                      email: "wantazulfikri@gmail.com"
+                      phone: "+6281235288543"
+                      password: "@Secret123"
+                      image: "wantazulfikri.png"
+    
+    Response200UserUpdate:
+        description: User information updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            examples:
+              example update 1:
+                summary: Example update user id 1
+                value:
+                  code: 200
+                  message: "Success Updated an Account"
+              example update 2:
+                summary: Example update user id 3
+                value:
+                  code: 200
+                  message: "Success Updated an Account"
+    
+    Response200UserDelete:
+        description: User information deleted successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  example: 200
+                message:
+                  type: string
+                  example: "Success Deleted an Account"
+
+    Response200LelangGet:
+          description: Get lelang information by their ID include with its history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lelang'
+    
+    Response200LelangListGet:
+      description: Get list of lelangs with pagination
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: "Successful Operation"
+              lelangs:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LelangList'
+              pagination:
+                $ref: '#/components/schemas/Pagination'
+            example:
+              code: 200
+              message: "Successful Operation"
+              data:
+                - lelang_id: 1
+                  item: "lukisan monalisa"
+                  deskripsi: "lukisan monalisa"
+                  price: "2000000"
+                  penjual: "zalai"
+                  date: "2024-24-12"
+                  status: "open"
+                  time: "20:00"
+                  image: "monalisa.jpg"
+                - lelang_id: 2
+                  item: "buku monolog Tan malaka"
+                  deskripsi: "buku perjuangan Tan malaka melawan penjajahan"
+                  price: "200000"
+                  penjual: "satrio"
+                  date: "2024-12-12"
+                  status: "open"
+                  time: "20:00"
+                  image: "monolog.jpg" 
+                - lelang_id: 3
+                  item: "mobil mercy"
+                  deskripsi: "mobil mercy tahun 1945"
+                  price: "200000"
+                  penjual: "satrio"
+                  date: "2024-12-12"
+                  status: "open"
+                  time: "20:00"
+                  image: "monolog.jpg"
+              pagination:
+                page: 1
+                per_page: 3
+                total_pages: 5
+                total_items: 12
+
+    Response200BidGet:
+          description: Get list bids information by lelang ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bids'
+
+            
+    Response200LelangUpdate:
+      description: Successful response for updating an lelang
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Lelang'
+
+    Response200BidUpdate:
+      description: Successful response for updating a ticket
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Bids'
+
+    Response201LelangCreate:
+      description: Successful Create an Lelang
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseLelangCreate'
+
+    Response201TransactionCreate:
+      description: Successful for creating a transaction
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseTransactionCreate'
+          examples:
+            example_transaction_pending:
+              summary: Example transaction pending
+              value:
+                code: 201
+                message: Success Created a Transaction
+                data:
+                  invoice: "MT00002570"   
+
+    Response200PaymentCreate:
+      description: Successful for creating a payment
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseTransactionCreate'
+
+    Response200TransactionGet:
+      description: Successful response for retrieving transactions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseTransactionGet'
+          examples:
+            example_transaction_1:
+              summary: Example transaction 1
+              value:
+                code: 200
+                message: Successful Operation
+                data:
+                  invoice: "MT00002570"
+                  seller: peterzalai
+                  seller_email: peterzalai@gmail.com
+                  attendee: AzhariAziz
+                  attendee_email: azhariaziz@gmail.com
+                  title: "udemy: golang goroutines"
+                  event_date: "2023-04-25"
+                  event_time: "10:15:00"
+                  purchase_startdate: "2023-04-14 20:15:00"
+                  purchase_enddate: "2023-04-15 20:15:00"
+                  status: "pending"
+                  status_date: "2023-04-15 10:15:00"
+                  items_description:
+                    - ticket_category: "VIP"
+                      ticket_price: 500000
+                      ticket_quantity: 2
+                      subtotal: 1000000
+                    - ticket_category: "Reguler"
+                      ticket_price: 250000
+                      ticket_quantity: 4
+                      subtotal: 1000000
+                  grand_total: 2000000
+                  payment_method: "credit_card"   
+            example_transaction_2:  
+              summary: Example transaction 2
+              value:
+                code: 200
+                message: Successful Operation
+                data:
+                  invoice: "MT00002570"
+                  seller: peterzalai
+                  seller_email: peterzalai@gmail.com
+                  attendee: AzhariAziz
+                  attendee_email: azhariaziz@gmail.com
+                  title: "udemy: golang goroutines"
+                  event_date: "2023-04-25"
+                  event_time: "10:15:00"
+                  purchase_startdate: "2023-04-14 20:15:00"
+                  purchase_enddate: "2023-04-15 20:15:00"
+                  status: "completed"
+                  status_date: "2023-04-15 10:15:00"
+                  items_description:
+                    - ticket_category: "VIP"
+                      ticket_price: 500000
+                      ticket_quantity: 2
+                      subtotal: 1000000
+                    - ticket_category: "Reguler"
+                      ticket_price: 250000
+                      ticket_quantity: 4
+                      subtotal: 1000000
+                  grand_total: 2000000
+                  payment_method: "credit_card"     
+
+    Response201HistoryCreate:
+      description: Create a history successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 201
+              message:
+                type: string
+                example: "Success Created a History"
+
+    Response200HistoryEdit:
+      description: Update a  successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: "Success Updated a Review"
+
+    Response200HistoryDelete:
+        description: History deleted successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  example: 200
+                message:
+                  type: string
+                  example: "Success Deleted a History"
+
+    Response400:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "Bad Request"
+
+    Response401:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: number                
+              message:
+                type: string                
+              data:
+                type: string
+            example:
+              code: 401
+              message: "Missing or Malformed JWT"
+
+    Response404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "The requested resource was not found."
+
+    Response404Login:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "The requested resource was not found. Please check your email and password input."
+
+    Response500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 500
+              message:
+                type: string
+                example: "Internal Server Error"
+
+  schemas:
+    UserRegister:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          format: phone
+        password:
+          type: string
+          format: password
+        image:
+          type: string
+          format: binary
+      example:
+        username: "peterzalai"
+        email: "peterzalai@gmail.com"
+        phone: "+6281235288543"
+        password: "@Secret123"
+        image: "https://peterzalai.jpg"
+    
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      example:
+        email: "peterzalai@gmail.com"
+        password: "@Secret123"
+    
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        address:
+          type: string
+        password:
+          type: string
+          format: password
+        image:
+          type: string
+          format: binary
+      example:
+        name: "Peter Zalai"
+        username: "peterzalai"
+        email: "peterzalai@gmail.com"
+        phone: "+6281235288543"
+        address: "Denpasar, Bali"
+        image: "peterzalai.png"
+    
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          format: phone
+        password:
+          type: string
+          format: password
+        image:
+          type: string
+          format: binary
+      example:
+        username: "peterzalai"
+        email: "peterzalai@gmail.com"
+        phone: "+6281235288543"
+        paswword: "@Secret123"
+        image: "peterzalai.png"
+
+    Lelang:
+      type: object 
+      properties: 
+        event_id: 
+          type: integer
+          description: Event ID 
+        item: 
+          type: string  
+          description: Item of the lelang 
+        description: 
+          type: string 
+          description: Details of the lelang
+        price: 
+          type: integer
+          description: Price of the lelang
+        seller: 
+          type: string 
+          description: Name of the lelang seller 
+        date: 
+          type: string 
+          format: date-time 
+          description: Date of the event in ISO format (YYYY-MM-DD)
+        time: 
+          type: string 
+          format: time 
+          description: Time of the event in 24-hour format (HH:MM:SS)
+        status:
+          type: string
+          description: Status of the event, open or closed
+        image: 
+          type: string 
+          format: binary
+          description: Image of the event 
+        username:
+          type: string
+        user_picture:
+          type: string
+          format: binary
+          description: Image of the user
+        history:
+          type: string
+      example:
+        code: 200
+        message: "Successful Operation"
+        data: 
+          event_id: 1
+          item: "lukisan monalisa"
+          deskripsi: "lukisan monalisa"
+          price: "2000000"
+          penjual: "zalai"
+          date: "2024-24-12"
+          status: "open"
+          time: "20:00"
+          image: "monalisa.jpg"
+          attendances:
+          - username: "peterzalai"
+            user_picture: "peterzalai.png"
+          - username: "AzhariAziz"
+            user_picture: "AzhariAziz.png"
+          - username: "ropel"
+            user_picture: "ropel.png"
+          - username: "wanta"
+            user_picture: "wanta.png"
+          history:
+          - username: "peterzalai"
+            user_picture: "peterzalai.png"
+            review: "Great!"
+          - username: "ropel"
+            user_picture: "ropel.png"
+            review: "Superb!"
+
+    LelangList:
+      type: object
+      properties: 
+        lelang_id: 
+          type: integer
+          description: Lelang ID 
+        item: 
+          type: string  
+          description: Item name lelang 
+        description: 
+          type: string 
+          description: description Item lelang
+        seller:
+          type: string 
+          description: Seller Item lelang
+        date: 
+          type: string 
+          description: date lelang  
+        time: 
+          type: string 
+          format: time lelang
+          description: Time of the lelang in 24-hour format (HH:MM:SS)
+        status:
+          type: string
+          description: Status of the lelang, open or closed
+        image: 
+          type: string 
+          format: binary
+    
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The current page number.
+        per_page:
+          type: integer
+          description: The number of items per page.
+        total_pages:
+          type: integer
+          description: The total number of pages.
+        total_items:
+          type: integer
+          description: The total number of items.
+
+    LelangCreate:
+      type: object 
+      properties: 
+        lelang_id: 
+          type: integer
+          description: Lelang ID 
+        item: 
+          type: string  
+          description: Item name lelang 
+        description: 
+          type: string 
+          description: description Item lelang
+        seller:
+          type: string 
+          description: Seller Item lelang
+        date: 
+          type: string 
+          description: date lelang  
+        time: 
+          type: string 
+          format: time lelang
+          description: Time of the lelang in 24-hour format (HH:MM:SS)
+        status:
+          type: string
+          description: Status of the lelang, open or closed
+        image: 
+          type: string 
+          format: binary
+        bid_price:
+          type: integer
+          description: Price Item Auction
+        bid_buyer:
+          type: string
+          description: Name buyer item auction
+        bid_quantity:
+          type: integer
+          description: Quantity of the bid available
+      example: 
+          event_id: 1
+          item: "lukisan monalisa"
+          deskripsi: "lukisan monalisa"
+          price: "2000000"
+          penjual: "zalai"
+          date: "2024-24-12"
+          status: "open"
+          time: "20:00"
+          image: "monalisa.jpg"
+          bid:
+          - bid_price: 80000000
+            bid_buyer: "peter"
+            bid_quantity: 1
+          - bid_price: 9000000
+            bid_buyer: "zalai"
+            bid_quantity: 1
+
+    ResponseLelangCreate:
+      type: object 
+      properties: 
+        lelang_id: 
+          type: integer
+          description: Lelang ID 
+        item: 
+          type: string  
+          description: Item name lelang 
+        description: 
+          type: string 
+          description: description Item lelang
+        seller:
+          type: string 
+          description: Seller Item lelang
+        date: 
+          type: string 
+          description: date lelang  
+        time: 
+          type: string 
+          format: time lelang
+          description: Time of the lelang in 24-hour format (HH:MM:SS)
+        status:
+          type: string
+          description: Status of the lelang, open or closed
+        image: 
+          type: string 
+          format: binary
+      example: 
+        code: 201
+        message: "Success created an event"
+        data:
+          event_id: 1
+          item: "lukisan monalisa"
+          deskripsi: "lukisan monalisa"
+          price: "2000000"
+          penjual: "zalai"
+          date: "2024-24-12"
+          status: "open"
+          time: "20:00"
+          image: "monalisa.jpg"
+          bid:
+          - bid_price: 6000000
+            bid_buyer: "peter"
+            bid_quantity: 1
+          - bid_price: 6000000
+            bid_buyer: "zalai"
+            bid_quantity: 1
+
+    LelangUpdate:
+      type: object 
+      properties: 
+        lelang_id: 
+          type: integer
+          description: Lelang ID 
+        item: 
+          type: string  
+          description: Item name lelang 
+        description: 
+          type: string 
+          description: description Item lelang
+        seller:
+          type: string 
+          description: Seller Item lelang
+        date: 
+          type: string 
+          description: date lelang  
+        time: 
+          type: string 
+          format: time lelang
+          description: Time of the lelang in 24-hour format (HH:MM:SS)
+        status:
+          type: string
+          description: Status of the lelang, open or closed
+        image: 
+          type: string 
+          format: binary
+          description: Image of the event 
+      example: 
+        code: 200
+        message: "Success updated an event"
+        data:
+          event_id: 1
+          item: "kris majapahit"
+          deskripsi: "kris pusaka peninggalan kerajaan majapahit"
+          price: "3000000000"
+          penjual: "peter"
+          date: "2024-24-12"
+          status: "close"
+          time: "20:00"
+          image: "kris.jpg"
+              
+    Bids:
+      type: object 
+      properties: 
+        event_id: 
+          type: integer
+          description: Event ID
+        bid_price:
+          type: integer
+          description: Price Bid Item 
+        bid_buyer:
+          type: string
+          description: Name buyer item auction
+        bid_quantity:
+          type: integer
+          description: Quantity of the bid available  
+      example: 
+        code: 200
+        message: "Successful Operation"
+        data:
+        - lelang_id: 1
+          bid_id: 1
+          bid_price: 60000000
+          bid_buyer: "peter"
+          bid_quantity: 1
+        - lelang_id: 1
+          bid_id: 2
+          bid_price: 70000000
+          bid_buyer: "zalai"
+          bid_quantity: 1
+
+    BidUpdate:
+      type: object 
+      properties: 
+        bid_price:
+          type: integer
+          description: Price in item auction
+        bid_buyer:
+          type: string
+          description: Name buyer item acution
+        bid_quantity:
+          type: integer
+          description: Quantity of the bid available  
+      example: 
+        code: 200
+        message: "Success Updated Bids"      
+          
+    RequestTransactionCreate:
+      type: object
+      properties:
+        event_id:
+          type: integer
+          example: 1
+        items_description:
+          type: array
+          items:
+            type: object
+            properties:
+              bid_id:
+                type: integer
+              bid_price:
+                type: integer
+              bid_buyer:
+                type: string
+              bid_quantity:
+                type: integer
+              total:
+                type: integer
+          example:
+            - bid_id: 1
+              bid_price: 600000000
+              bid_buyer: "peter"
+              bid_quantity: 1
+              total: 600000000
+            - bid_id: 1
+              bid_price: 70000000
+              bid_buyer: "zalai"
+              bid_quantity: 1
+              total: 7000000
+        total: 
+          type: integer
+          example: 70000000
+        payment_method:
+          type: string
+          enum: [credit_card, debit_card, bank_transfer, e-wallet]
+          example: "bank_transfer"
+
+      
+    RequestPaymentCreate:
+      type: object
+      properties:
+        invoice:
+          type: string
+          example: "MT00002570"
+        gross_amount:
+          type: integer
+          example: 300000
+
+    ResponseTransactionCreate:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: "Successful Operation"
+            data:
+              type: object
+              properties:
+                Transaction_ID:
+                  type: string
+                  example: "f839699e-7120-4f71-bf33-09796053fa07"
+                Order_ID:
+                  type: string
+                  example: "MT00002570"
+                Gross_Amount:
+                  type: string
+                  example: "300000"
+                Payment_Type:
+                  type: string
+                  example: "bank_transfer"
+                Bank:
+                  type: string
+                  example: "bca"
+                Transaction_Time:
+                  type: string
+                  format: date-time
+                  example: "2023-05-04 19:15:36"
+                Transaction_Status:
+                  type: string
+                  example: "pending"
+                Va_Numbers:
+                  type: string
+                  example: "43863296105"
+
+    ResponseTransactionGet:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Success retrieved transaction data"
+        data:
+          type: object
+          properties:
+            invoice:
+              type: string
+              example: "MT00002570"
+            user_id:
+              type: number
+              example: 1
+            event_id:
+              type: number
+              example: 1
+            event_date:
+              type: string
+              format: date-time
+              example: "2023-04-25 10:15:00"
+            purchase_startdate:
+              type: string
+              format: date-time
+              example: "2023-04-16 10:15:00"
+            purchase_enddate:
+              type: string
+              format: date-time
+              example: "2023-04-17 10:15:00"
+            status:
+              type: string
+              example: "pending"
+            status_date:
+              type: string
+              example: "2023-04-17 10:15:00"
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "Naruto & Hinata Wedding Day"
+                  person:
+                    type: number
+                    example: 2
+                  price:
+                    type: number
+                    example: 100
+            subtotal:
+              type: number
+              example: 200
+            tax:
+              type: object
+              properties:
+                description:
+                  type: string
+                  example: "Sales tax (10%)"
+                amount:
+                  type: number
+                  example: 10
+              example:
+                description: "Sales tax (10%)"
+                amount: 10
+            total_price:
+              type: number
+              example: 220
+            payment_type:
+              type: string
+              enum: [free, paid]
+              example: "paid"
+            payment_method:
+              type: string
+              enum: [credit_card, debit_card, bank_transfer, e-wallet]
+              example: "credit_card"
+          
+    RequestHistoryCreate:
+      type: object
+      properties:
+        review:
+          type: string
+          example: "Seems quite difficult to give an expression, overall good"
+
+    RequestHistoryEdit:
+      type: object
+      properties:
+        review:
+          type: string
+          example: "A review is a longer, more formal write-up concerning someones work over a set period of time."
