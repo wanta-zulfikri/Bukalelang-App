@@ -32,3 +32,14 @@ type HistoryCore struct {
 	StatusItem   string 
 	PriceSold    int64
 }
+
+type Repository interface {
+	CreateLelangWithBid(lelang Core, userID uint) error 
+	GetLelangs() ([]Core, error)
+
+} 
+
+type Service interface {
+	CreateLelangWithBid(lelang Core, userID uint) error 
+	GatLelangs() ([]Core, error)
+}

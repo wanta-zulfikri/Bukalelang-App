@@ -8,7 +8,7 @@ import (
 	 userRepo"BukaLelang/app/features/users/repository"
 	 userLogic"BukaLelang/app/features/users/services"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
