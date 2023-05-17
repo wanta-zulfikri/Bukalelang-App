@@ -1,11 +1,13 @@
 package config
 
 import (
+	"BukaLelang/config/common"
+	"log"
 	"os"
 	"sync"
-	"log"
-	// "google.golang.org/genproto/googleapis/cloud/oslogin/common" 
-    "github.com/joho/godotenv"
+
+	// "google.golang.org/genproto/googleapis/cloud/oslogin/common"
+	"github.com/joho/godotenv"
 )
 
 type Configuration struct {
@@ -48,12 +50,11 @@ func InitConfiguration() *Configuration {
 	defaultConfig.Database.Username = os.Getenv("Username")
 	defaultConfig.Database.Password = os.Getenv("Password")
 	defaultConfig.Database.Name = os.Getenv("Name")
-	// common.JWTSecret = os.Getenv("JWTSecret")
-	// common.Credential = os.Getenv("Credential")
-	// common.ProjectID = os.Getenv("ProjectID") 
-	// common.BucketName = os.Getenv("BucketName")
-	// common.Path = os.Getenv("Path") 
-	// common.MidstransServerKey = os.Getenv("MidstransServerKey")
+	common.JWTSecret = os.Getenv("JWTSecret")
+	common.AWS_REGION = os.Getenv("AWS_REGION")
+	common.ACCESS_KEY_ID = os.Getenv("ACCESS_KEY_ID") 
+	common.ACCESS_SECRET_KEY = os.Getenv("AWS_ACCESS_SECRET_KEY")
+	common.SERVER_KEY_MIDTRANS = os.Getenv("SERVER_KEY_MIDTRANS")
 
 	return &defaultConfig 
 }

@@ -18,7 +18,7 @@ func New(db *gorm.DB) *UserRepository {
 		return &UserRepository{db: db}
 }
 
-func (ar *UserRepository) Register(newUser users.Core) (users.Core, error) {
+func (ar *UserRepository) Register(newUser users.Core)  (users.Core, error) {
 		var input = User{}
 		HashedPassword, err := helper.HashedPassword(newUser.Password)
 		if err != nil {
@@ -84,6 +84,25 @@ func (ar *UserRepository) UpdateProfile(id uint, updatedUser users.Core) error {
 		}
 		log.Print("Failed to update user", result.Error)
 		return result.Error
+	}
+	return nil
+}
+
+func (ar *UserRepository) DeleteProfile(id uint) error {
+	input := User{}
+	if err := ar.db.Where("id = ?", id).Find(&input).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("user with id %v not found", id)
+		}
+		log.Print("Failed to query user by id", err)
+		return err
+	}
+
+	input.DeletedAt = gorm.DeletedAt{Time: time.Now(), Valid: true}
+
+	if err := ar.db.Save(&input).Error; err != nil {
+		log.Println("Terjadi error saat melakukan user buku", err)
+		return err
 	}
 	return nil
 }
