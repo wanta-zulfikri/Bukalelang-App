@@ -11,3 +11,10 @@ type User struct {
 	Image 		string 		`json:"image" gorm:"type:varchar(100)"`
 } 
 
+
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	if u.Image == "" {
+		u.Image = "https://storage.googleapis.com/grouproject/book/images.jpeg"
+	}
+	return nil
+}

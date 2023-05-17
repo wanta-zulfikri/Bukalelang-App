@@ -5,15 +5,17 @@ import (
 	"BukaLelang/helper"
 	"errors"
 	"fmt"
+	"log"
 
-	"github.com/labstack/gommon/email"
+	// "github.com/labstack/gommon/email"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
 	m users.Repository
 }
 
-func New(r users.Repository) users.Repository {
+func New(r users.Repository) users.Service {
 	return &UserService{m:r}
 }
 
@@ -42,19 +44,34 @@ func (us *UserService) GetProfile(id uint) (users.Core, error) {
 } 
 
 func (us *UserService) UpdateProfile(id uint, updateUser users.Core) error {
-		hashedPassword, err := helper.HashedPassword(updateUser.Password)
-		if err != nil {
-				return fmt.Errorf("failed to hash password: %v", err)
+	hashedPassword, err := helper.HashedPassword(updateUser.Password)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %v", err)
+	}
+	updatedUser := users.Core{
+		Username: updateUser.Username,
+		Email:    updateUser.Email,
+		Phone:    updateUser.Phone,
+		Password: string(hashedPassword),
+		Image:    updateUser.Image,
+	}
+	if err := us.m.UpdateProfile(id, updatedUser); err != nil {
+		return fmt.Errorf("Error while updating %d: %v", id, err)
+	}
+	return nil
+}
+
+func (us *UserService) DeleteProfile(id uint) error {
+	if id == 0 {
+		return fmt.Errorf("Invalid email")
+	}
+	err := us.m.DeleteProfile(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("Email: %v ,not found", id)
 		}
-		updateUser := users.Core{
-			Username:  updateUser.Username,
-			Email:     updateUser.Email,
-			Phone:     updateUser.Phone,
-			Password:  string(hashedPassword),
-			Image:     updateUser.Image,
-		}
-		if err := us.m.UpdateProfile(id, updateUser); err != nil {
-				return fmt.Errorf("Error while updating %d: %v", id, err)
-		}
-		return nil 
+		log.Printf("Error while deleting %d: %v", id, err)
+		return fmt.Errorf("Terjadi masalah pada server")
+	}
+	return nil
 }

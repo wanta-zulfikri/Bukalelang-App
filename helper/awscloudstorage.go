@@ -1,84 +1,113 @@
 package helper
 
 import (
-	"context"
+	"BukaLelang/config/common"
+	"errors"
 	"fmt"
-	"image"
-	"io"
+	"log"
+	"math/rand"
 	"mime/multipart"
-	"os"
-	"path/filepath"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/aws/internal"
-	"github.com/aws/aws-sdk-go-v2/aws/option"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/labstack/echo"
-) 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+)
 
-type StorageS3Config struct {
-	S3Client *s3.Client 
-	BucketName string
-	FolderName string
+var theSession *session.Session
+
+// ======================================================================
+// INIT SESSION KEY CREDENTIAL S3 BUCKET AWS
+// ======================================================================
+// GetConfig Initiatilize config in singleton way
+func GetSession() *session.Session {
+	if theSession == nil {
+		theSession = initSession()
+	}
+	return theSession
+}
+func initSession() *session.Session {
+	newSession := session.Must(session.NewSession(&aws.Config{
+		Region:      aws.String(common.AWS_REGION),
+		Credentials: credentials.NewStaticCredentials(common.ACCESS_KEY_ID, common.ACCESS_SECRET_KEY, ""),
+	}))
+	return newSession
 }
 
-func UploadImage(c echo.Context, file *multipart.FileHeader) (string, error) {
-	if file == nil {
-		return "", nil
-	}
+type UploadResult struct {
+	Path string `json:"path" xml:"path"`
+}
 
-	image, err := file.Open()
+// ======================================================================
+// UPLOAD IMAGE PROGRESS
+// ======================================================================
+func GetUrlImagesFromAWS(fileData multipart.FileHeader) (string, error) {
+
+	if fileData.Filename != "" && fileData.Size != 0 {
+		if fileData.Size > 500000 {
+			return "", errors.New("file size max 500kb")
+		}
+		file, err := fileData.Open()
+		if err != nil {
+			return "", errors.New("error open fileData")
+		}
+		// Validasi Type
+		tipeNameFile, err := Filename(file)
+		if err != nil {
+			return "", errors.New("file type error only jpg or png file can be upload")
+		}
+		defer file.Close()
+
+		log.Println("size:", fileData.Filename, file)
+		namaFile := GenerateRandomString()
+		namaFile = namaFile + tipeNameFile
+		fileData.Filename = namaFile
+		log.Println(namaFile)
+		file2, _ := fileData.Open()
+		defer file2.Close()
+		uploadURL, err := UploadToS3(fileData.Filename, file2)
+		if err != nil {
+			return "", errors.New("cannot upload to s3 server error")
+		}
+		return uploadURL, nil
+	}
+	return "", nil
+}
+
+// ======================================================================
+// UPLOAD TO S3
+// ======================================================================
+// Helper
+func UploadToS3(fileName string, src multipart.File) (string, error) {
+	// The session the S3 Uploader will use
+	sess := GetSession()
+	// Create an uploader with the session and default options
+	uploader := s3manager.NewUploader(sess)
+	// Upload the file to S3.
+	result, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket:      aws.String("AWSBUCKET/"),
+		Key:         aws.String(fileName),
+		Body:        src,
+		ContentType: aws.String("image/png"),
+	})
+	// content type penting agar saat link dibuka file tidak langsung auto download
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to upload file, %v", err)
 	}
-	defer image.Close() 
+	return result.Location, nil
+}
 
-	s3c := StorageS3Config{
-		S3Client: InitS3Client(),
-		BucketName: "<your-bucket-name>",
-		FolderName: "<your-folder-name>",
-	}
-
-	fileName := file.Filename
-	// setelah mendapatkan ekstensi file, gunakan ekstensi tersebut sebagai ContentType
-	fileExtension := filepath.Ext(fileName)
-	contentType := "image/" + fileExtension [1:] 
-	fileNameOnS3 := s3c.FolderName + "/" + fileName 
-	// Membuat PutObjectInput dengan metadata file 
-	input := &s3c.PutObjectInput{
-		Bucket: 		aws.String(s3c.BucketName),
-		Key: 			aws.String(fileNameOnS3),
-		Body:           image, 
-		contentType:    aws.String(contentType),
-	}
-
-	// Mengunggah file ke S3 
-	_, err = s3c.S3Client.PutObject(context.Background(), input)
-	if err != nil {
-		return "", err
-	}
-
-	// Mengembalikan URL file yang diunggah 
-	return "https://" + s3c.BucketName + ".s3.amazonaws.com/" + fileNameOnS3, nil
-} 
-
-func InitS3Client() *s3.Client {
-	cfg, err := external.LoadDefaultAWSConfig()
-	if err != nil {
-		fmt.Println("Tidak dapat memuat konfigurasi AWS:", err)
-		os.Exit(1)
-	}
-	// konfigurasi tambahan seperti mengubah region dan lainnya 
-	cfg.Region = "<your-region>"
-	opts := []func (*s3.Options){}
-	// untuk mengkonfigurasi kredensial dari enviroment variable, hilangkan opsi ini 
-	opts = append(opts, func(o *s3.Options) {
-		o.Credential = aws.NewEnvCredentials()
+func GenerateRandomString() string {
+	rand.Seed(time.Now().Unix())
+	str := "AsDfzGhBvCX123456MnBp"
+	shuff := []rune(str)
+	// Shuffling the string
+	rand.Shuffle(len(shuff), func(i, j int) {
+		shuff[i], shuff[j] = shuff[j], shuff[i]
 	})
 
-	// Membuat klien s3 
-	s3Client := s3.NewFromConfig(cfg, opts...)
-	return s3Client
+	// Displaying the random string
+	// fmt.Println(string(shuff))
+	return string(shuff)
 }
-

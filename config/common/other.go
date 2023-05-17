@@ -1,8 +1,8 @@
 package common
 
-var JWTSecret          string 
-var Credential         string 
-var ProjectID          string  
-var ProjectName        string  
-var Path               string  
-var MidstransServerKey string
+var JWTSecret           string 
+var AWS_REGION          string 
+var ACCESS_KEY_ID       string  
+var ACCESS_SECRET_KEY   string 
+var SERVER_KEY_MIDTRANS string 
+var BUCKET              string 
