@@ -44,10 +44,10 @@ func (er *LelangRepository) CreateLelangWithBid(lelang lelangs.Core, userID uint
 	bids := make([]repository.Bid, len(lelang.Bid))
 	for i, bid := range lelang.Bid {
 		bids[i] = repository.Bid{
-			Price: bid.Price,
-			Buyer: bid.Buyer,
-			Quantity: bid.Quantity,
-			LelangID: newLelang.ID,
+			BidPrice     : bid.BidPrice,
+			BidBuyer     : bid.BidBuyer,
+			BidQuantity  : bid.BidQuantity,
+			LelangID     : newLelang.ID,
 		}
 	}
 	err = tx.Table("bids").CreateInBatches(bids, len(bids)).Error 
@@ -62,6 +62,14 @@ func (er *LelangRepository) CreateLelangWithBid(lelang lelangs.Core, userID uint
 func (er *LelangRepository) GetLelangs() ([]lelangs.Core, error) {
 	var cores []lelangs.Core
 	if err := er.db.Table("lelangs").Where("deleted_at IS NULL").Find(&cores).Error; err != nil {
+		return nil, err 
+	}
+	return cores, nil 
+}
+
+func (er *LelangRepository) GetLelangsByUserID(userid uint) ([]lelangs.Core, error) {
+	var cores []lelangs.Core
+	if err := er.db.Table("lelangs").Where("user_id = ? AND deleted_at IS NULL", userid).Find(&cores).Error; err != nil {
 		return nil, err 
 	}
 	return cores, nil 
