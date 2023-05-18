@@ -24,4 +24,20 @@ func (es *LelangService) GetLelangs() ([]lelangs.Core, error) {
 		return nil, err
 	}
 	return lelangs, nil
+} 
+
+func (es *LelangService) GetLelangsByCategory(category string) ([]lelangs.Core, error){
+	lelangs, err := es.r.GetLelangsByCategory(category)
+	if err != nil {
+		return nil, err
+	}
+	return lelangs, nil
+}
+
+func (es *LelangService) GetLelangsByUserID(userid uint) ([]lelangs.Core, error) {
+	lelangs, err := es.r.GetLelangsByUserID(userid)
+	if err != nil {
+		return nil, err 
+	}
+	return lelangs, nil
 }
