@@ -253,3 +253,58 @@ func (ec *LelangController) GetLelangsByUserID() echo.HandlerFunc {
 		})
 	}
 }
+
+func (ec *LelangController) GetLelang() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		lelangid , err := strconv.ParseInt(c.Param("id"), 10, 64)
+		if err != nil {
+			c.Logger().Error("Failed to parse ID from URL param: ", err)
+			return c.JSON(http.StatusBadRequest, helper.ResponseFormat(http.StatusBadRequest, "Bad Request", nil))
+		}
+
+		lelang, err := ec.s.GetLelang(uint(lelangid))
+		if err != nil {
+			c.Logger().Error(err.Error())
+			return c.JSON(http.StatusBadRequest, helper.ResponseFormat(http.StatusNotFound,"The requested resourse was not found.", nil ))
+		} 
+
+		response := ResponseGetLelangs{
+			ID			: 	lelang.ID,
+			Item		:	lelang.Item,
+			Deskripsi	: 	lelang.Deskripsi,
+			Price		: 	lelang.Price,
+			Seller		: 	lelang.Seller,
+			Date        :   lelang.Date,
+			Status		:   lelang.Status,
+			Time		:   lelang.Time,
+			Image		: 	lelang.Image,
+		}
+
+		return c.JSON(http.StatusOK, helper.DataResponse{
+			Code		: http.StatusOK,
+			Message		: "Successful operation",
+			Data		: response,
+		})
+	}
+} 
+
+func (ec *LelangController) UpdateLelang() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input RequestUpdateLelang 
+		tokenString := c.Request().Header.Get("Authorization")
+		claims, err := middlewares.ValidateJWT2(tokenString)
+		if err != nil {
+			return c.JSON(http.StatusUnauthorized, helper.ResponseFormat(http.StatusUnauthorized, "Missing or Malformed JWT."+err.Error(), nil))
+		}
+
+		username := claims.Username 
+		id := claims.ID 
+		if err := c.Bind(&input); err != nil {
+			c.Logger().Error("Failed to bind input from request body: ", err)
+			return c.JSON(http.StatusBadRequest, helper.ResponseFormat(http.StatusBadRequest, "Bad Request", nil))
+		} 
+
+		file, err := c.FormFile("image")
+		var event_picture string
+	}
+}

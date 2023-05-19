@@ -3,6 +3,8 @@ package repository
 import (
 	"BukaLelang/app/features/bids/repository"
 	"BukaLelang/app/features/lelangs"
+	"errors"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -73,4 +75,62 @@ func (er *LelangRepository) GetLelangsByUserID(userid uint) ([]lelangs.Core, err
 		return nil, err 
 	}
 	return cores, nil 
+} 
+
+func (er *LelangRepository) GetLelang(lelangid uint) (lelangs.Core, error) {
+	var input Lelang 
+	result := er.db.Where("id = ? AND deleted_at IS NULL", lelangid).Find(&input)
+	if result.Error != nil {
+		return lelangs.Core{}, result.Error	
+	}
+	if result.RowsAffected == 0 { 
+		return lelangs.Core{}, result.Error
+	}
+		return lelangs.Core{
+			ID: input.ID, 
+			Item: input.Item,
+			Deskripsi: input.Deskripsi,
+			Price: input.Price,
+			Seller: input.Seller,
+			Date: input.Date,
+			Status: input.Status,
+			Time: input.Time,
+			Image: input.Image,
+		}, nil
+}
+
+func (er *LelangRepository) UpdateLelang(id uint, updatedLelang lelangs.Core) error {
+	if err := er.db.Model(&Lelang{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"item"			: updatedLelang.Item, 
+		"deskripsi"		: updatedLelang.Deskripsi,
+		"price"			: updatedLelang.Price,
+		"seller"        : updatedLelang.Seller,
+		"date"	        : updatedLelang.Date, 
+		"status"        : updatedLelang.Status, 
+		"time"	        : updatedLelang.Time, 
+		"image"         : updatedLelang.Image,
+		"updated_at"    : time.Now(),
+	}).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return err 
+		}
+		return err 
+	}
+	return nil 
+} 
+
+func (er *LelangRepository) DeleteLelang(id uint) error {
+	input := Lelang{}
+	if err := er.db.Where("id = ?", id).Find(&input).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return err
+		}
+		return err
+	}
+	input.DeletedAt = gorm.DeletedAt{Time: time.Now(), Valid:true}
+
+	if err := er.db.Save(&input).Error; err != nil {
+		return err
+	}
+	return nil 
 }
