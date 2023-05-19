@@ -1,6 +1,11 @@
 package services
 
-import "BukaLelang/app/features/lelangs"
+import (
+	"BukaLelang/app/features/lelangs"
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 type LelangService struct {
 	r lelangs.Repository
@@ -40,4 +45,31 @@ func (es *LelangService) GetLelangsByUserID(userid uint) ([]lelangs.Core, error)
 		return nil, err 
 	}
 	return lelangs, nil
+} 
+
+func (es *LelangService) GetLelang(lelangid uint) (lelangs.Core, error) {
+	lelang, err := es.r.GetLelang(lelangid)
+	if err != nil {
+		return lelangs.Core{}, err
+	}
+	return lelang, nil
+}
+
+func (es *LelangService) UpdateLelang(id uint, updatedLelang lelangs.Core) error {
+	updatedLelang.ID = id 
+	if err := es.r.UpdateLelang(id, updatedLelang); err != nil {
+		return nil 
+	}
+	return nil
+}
+
+func (es *LelangService) DeleteLelang(id uint) error {
+	err := es.r.DeleteLelang(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return err 
+		}
+		return err 
+	}
+	return nil
 }

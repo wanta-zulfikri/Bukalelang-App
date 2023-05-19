@@ -39,18 +39,27 @@ type Repository interface {
 	CreateLelangWithBid(lelang Core, userID uint) error
 	GetLelangs() ([]Core, error)
 	GetLelangsByCategory(category string) ([]Core, error)
-	GetLelangsByUserID(userid uint) ([]Core, error)
+	GetLelangsByUserID(userid uint) ([]Core, error) 
+	GetLelang(lelangid uint) (Core, error)
+	UpdateLelang(id uint, updatedLelang Core) error 
+	DeleteLelang(id uint) error
 }
 
 type Service interface {
 	CreateLelangWithBid(lelang Core, userID uint) error
 	GatLelangs() ([]Core, error)
 	GetLelangsByCategory(category string) ([]Core, error)
-	GetLelangsByUserID(userid uint) ([]Core, error)
+	GetLelangsByUserID(userid uint) ([]Core, error) 
+	GetLelang(lelangid uint) (Core, error) 
+	UpdateLelang(id uint, updatedLelang Core) error
+	DeleteLelang(id uint) error
 }
 
 type Handler interface {
 	CreateLelangWithBid() echo.HandlerFunc
 	GetLelangs() echo.HandlerFunc
 	GetLelangsByUserID() echo.HandlerFunc
+	GetLelang() echo.HandlerFunc
+	UpdateLelang() echo.HandlerFunc
+	DeleteLelang() echo.HandlerFunc
 }
