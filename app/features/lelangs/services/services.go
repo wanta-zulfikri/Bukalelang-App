@@ -23,7 +23,7 @@ func (s *LelangService) CreateLelangWithBid(lelang lelangs.Core, userID uint) er
 	return nil 
 } 
 
-func (es *LelangService) GetLelangs() ([]lelangs.Core, error) {
+func (es *LelangService) GetLelangs()([]lelangs.Core, error) {
 	lelangs, err := es.r.GetLelangs()
 	if err != nil {
 		return nil, err

@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Kong/go-pdk/service/response"
 	"github.com/labstack/echo/v4"
 )
 
@@ -108,7 +107,7 @@ func (ec *LelangController) GetLelangs() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.ResponseFormat(http.StatusNotFound, "The requested resource was not found.", nil))
 		}
 	} else {
-		lelangs, err = ec.s.GatLelangs()
+		lelangs, err = ec.s.GetLelangs()
 		if err != nil {
 			c.Logger().Error(err.Error())
 			return c.JSON(http.StatusBadRequest, helper.ResponseFormat(http.StatusNotFound, "The requested resource was not found.", nil))
@@ -304,7 +303,84 @@ func (ec *LelangController) UpdateLelang() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.ResponseFormat(http.StatusBadRequest, "Bad Request", nil))
 		} 
 
+		
+
 		file, err := c.FormFile("image")
-		var event_picture string
+		var event_picture string 
+		if err != nil && err != http.ErrMissingFile {
+			c.Logger().Error("Failed to get image from file: ", err)
+			return c.JSON(http.StatusBadRequest, helper.ResponseFormat(http.StatusBadRequest, "Bad Request", nil))
+
+		} else if file != nil {
+			event_picture, err = helper.UploadImage(c, file)
+			if err != nil {
+				c.Logger().Error("Failed to upload event_picture:", err)
+				return c.JSON(http.StatusInternalServerError, helper.ResponseFormat(http.StatusInternalServerError, "Internal Server Error", nil))
+			}
+		}
+		updatedLelang := lelangs.Core{
+			ID:   uint(id),
+			Item: input.Item,
+			Deskripsi: input.Deskripsi,
+			Price: input.Price,
+			Seller: username,
+			Date: input.Date,
+			Status: input.Status,
+			Time: input.Time,
+			Image: event_picture,
+
+		}
+
+		err = ec.s.UpdateLelang(updatedLelang.ID, updatedLelang)
+		if err != nil {
+			c.Logger().Error("Failed to update event_picture:", err)
+			return c.JSON(http.StatusInternalServerError, helper.ResponseFormat(http.StatusInternalServerError, "Internal Server Error", nil))
+		}
+
+		response := ResponseUpdateLelangs{
+			Item: updatedLelang.Item,
+			Deskripsi: updatedLelang.Deskripsi,
+			Price: updatedLelang.Price,
+			Seller: updatedLelang.Seller,
+			Date: updatedLelang.Date,
+			Status: updatedLelang.Status,
+			Time: updatedLelang.Time,
+			Image: updatedLelang.Image,
+		}
+
+		return c.JSON(http.StatusOK, helper.DataResponse{
+			Code: http.StatusOK,
+			Message: "Success updated an lelang.", 
+			Data: response,
+		})
+	}
+} 
+
+func (ec *LelangController) DeleteLelang()echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenString := c.Request().Header.Get("Authorization") 
+		claims, err := middlewares.ValidateJWT2(tokenString)
+		if err != nil {
+			return c.JSON(http.StatusUnauthorized, helper.ResponseFormat(http.StatusUnauthorized, "Missing or Malformed JWT"+err.Error(), nil))
+
+		}
+
+		id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+		if err != nil {
+			c.Logger().Error(err.Error())
+			return c.JSON(http.StatusUnauthorized, helper.ResponseFormat(http.StatusBadRequest,"Bad Request", nil))
+		}
+
+		if claims.ID != uint(id) {
+			return c.JSON(http.StatusUnauthorized,helper.ResponseFormat(http.StatusUnauthorized,"Unauthorized. Token is not valid for this user.", nil))
+		}
+
+		err = ec.s.DeleteLelang(uint(id))
+		if err != nil {
+			c.Logger().Error("Error deleting profile", err.Error())
+			return c.JSON(http.StatusInternalServerError, helper.ResponseFormat(http.StatusInternalServerError, "Internal Server Error", nil))
+		}
+
+		return c.JSON(http.StatusOK, helper.ResponseFormat(http.StatusOK,"Succes deleted an lelang", nil))
 	}
 }

@@ -47,7 +47,7 @@ type Repository interface {
 
 type Service interface {
 	CreateLelangWithBid(lelang Core, userID uint) error
-	GatLelangs() ([]Core, error)
+	GetLelangs() ([]Core, error)
 	GetLelangsByCategory(category string) ([]Core, error)
 	GetLelangsByUserID(userid uint) ([]Core, error) 
 	GetLelang(lelangid uint) (Core, error) 

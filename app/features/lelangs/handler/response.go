@@ -49,4 +49,15 @@ type Pagination struct {
 	TotalPages int `json:"total_pages"`
 	TotalItems int `json:"total_items"`
 
+} 
+
+type ResponseUpdateLelangs struct {
+	Item         string     `json:"item"`
+	Deskripsi    string     `json:"deskripsi"`
+	Price        string     `json:"price"`
+	Seller       string     `json:"seller"`
+	Date         string     `json:"date"`
+	Status       string     `json:"status"`
+	Time         string     `json:"time"`
+	Image        string     `json:"image"`	
 }
