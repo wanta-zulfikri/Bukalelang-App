@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"BukaLelang/config/common"
+	"BukaLelang/config"
 	"github.com/golang-jwt/jwt/v4"
 	
 )
@@ -18,7 +18,7 @@ func CreateJWT(id uint, email, username string) (string, error) {
 			"username":        username,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims) 
-	signedToken, err := token.SignedString([]byte(common.JWTSecret))
+	signedToken, err := token.SignedString([]byte(config.JWTKey))
 	if err != nil {
 			return "", err 
 	}
@@ -35,7 +35,7 @@ func ValidateJWT(authHeader string) (uint, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 						return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 				}
-				return []byte(common.JWTSecret), nil  
+				return []byte(config.JWTKey), nil  
 		})
 		if err != nil {
 				return 0, fmt.Errorf("invalid or expired token")
@@ -61,7 +61,7 @@ func ValidateJWTUsername(authHeader string) (string, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 						return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 				}
-				return []byte(common.JWTSecret), nil 
+				return []byte(config.JWTKey), nil 
 		})
 		if err != nil {
 			return "", fmt.Errorf("invalid or expired token")
@@ -97,7 +97,7 @@ func ValidateJWT2(authHeader string) (*Claims, error) {
 		tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
 
 		token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-				return []byte(common.JWTSecret), nil
+				return []byte(config.JWTKey), nil
 		})
 		if err != nil {
 			return nil, fmt.Errorf("invalid or expired token")

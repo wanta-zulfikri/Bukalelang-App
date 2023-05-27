@@ -312,7 +312,7 @@ func (ec *LelangController) UpdateLelang() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.ResponseFormat(http.StatusBadRequest, "Bad Request", nil))
 
 		} else if file != nil {
-			event_picture, err = helper.UploadImage(c, file)
+			event_picture, err = helper.UploadToS3(c, file)
 			if err != nil {
 				c.Logger().Error("Failed to upload event_picture:", err)
 				return c.JSON(http.StatusInternalServerError, helper.ResponseFormat(http.StatusInternalServerError, "Internal Server Error", nil))

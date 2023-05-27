@@ -6,7 +6,7 @@ type Bid struct {
 	gorm.Model 
 	ID             uint    `gorm:"primaryKey: autoIncrement"`
 	LelangID       uint 	`gorm:"reference:ID"`
-	BidPrice       int64 
+	BidPrice       uint
 	BidBuyer       string  `gorm:"type:varchar(20)"`
-	BidQuantity    int64 
+	BidQuantity    uint 
 }

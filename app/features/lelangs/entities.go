@@ -20,9 +20,9 @@ type Core struct {
 type BidCore struct {
 	ID           uint
 	LelangID     uint
-	BidPrice     int64
+	BidPrice     uint
 	BidBuyer     string
-	BidQuantity  int64
+	BidQuantity  uint
 }
 
 type HistoryCore struct {

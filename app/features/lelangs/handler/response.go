@@ -31,9 +31,9 @@ type LelangData struct {
 }
 
 type BidResponse struct {
-	Price     int64   `json:"bid_price"`
+	Price     uint   `json:"bid_price"`
 	Buyer     string  `json:"bid_buyer"`
-	Quantity  int64   `json:"bid_quantity"`
+	Quantity  uint   `json:"bid_quantity"`
 } 
 
 type LelangsResponse struct {

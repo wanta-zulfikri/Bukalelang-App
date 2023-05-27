@@ -1,60 +1,116 @@
 package config
 
 import (
-	"BukaLelang/config/common"
 	"log"
 	"os"
-	"sync"
+	
 
-	// "google.golang.org/genproto/googleapis/cloud/oslogin/common"
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
+)
+
+
+var (
+	JWTKey                   = ""
+	AWS_REGION               = ""
+	ACCESS_KEY_ID            = ""
+	ACCESS_KEY_SECRET        = ""
+	SERVER_KEY_MIDTRANS      = ""
 )
 
 type Configuration struct {
 	Port    string 
 	Database struct {
-		Driver   string 
-		Host     string
-		Name     string
-		Address  string 
-		Port     string 
-		Username string 
-		Password string 
+		Driver                   string 
+		Host                     string
+		Name                     string
+		Address                  string 
+		Port                     string 
+		Username                 string 
+		Password                 string 
+		jwtKey   				 string
+	    AWS_REGION               string
+	    ACCESS_KEY_ID            string
+	    ACCESS_KEY_SECRET        string
+     	SERVER_KEY_MIDTRANS      string
 	}
 } 
 
-var lock = &sync.Mutex{}
+
 var appConfig *Configuration 
 
 func GetConfiguration() *Configuration {
-	lock.Lock() 
-	defer lock.Unlock() 
-
-	if appConfig == nil {
-		appConfig = InitConfiguration()
-	} 
-	return appConfig
+	return InitConfiguration()
 } 
 
 func InitConfiguration() *Configuration {
+	app := Configuration{}
+	isRead := true 
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file: ")
+	if val, found := os.LookupEnv("PORT"); found {
+		app.Port = val 
+		isRead = false
+	}
+	if val, found := os.LookupEnv("JWT_KEY"); found {
+		app.Database.jwtKey = val
+		isRead = false
+	} 
+	if val, found := os.LookupEnv("DBUSER"); found {
+		app.Database.Username = val 
+		isRead = false
+	}
+	if val , found := os.LookupEnv("DBPASS"); found {
+		app.Database.Password = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("DBHOST") ; found {
+		app.Database.Host = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("DBPORT"); found {
+		app.Database.Port = val 
+		isRead = false
+	}
+	if val, found := os.LookupEnv("DBNAME"); found {
+		app.Database.Name = val 
+		isRead = false 
+	}
+	// untuk mencari env gambar
+	if val, found := os.LookupEnv("AWS_REGION") ; found {
+		app.Database.AWS_REGION = val 
+		isRead = false 
+	}
+	if val, found := os.LookupEnv("ACCESS_KEY_ID"); found {
+		app.Database.ACCESS_KEY_ID = val 
+		isRead = false
+	}
+	if val, found := os.LookupEnv("ACCESS_KEY_SECRET"); found {
+		app.Database.ACCESS_KEY_SECRET = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("SERVER_KEY_MIDTRANS"); found {
+		app.Database.SERVER_KEY_MIDTRANS = val
+		isRead = false
 	}
 
-	var defaultConfig Configuration 
-	defaultConfig.Port = os.Getenv("AppPort")
-	defaultConfig.Database.Host = os.Getenv("Host")
-	defaultConfig.Database.Port = os.Getenv("Port")
-	defaultConfig.Database.Username = os.Getenv("Username")
-	defaultConfig.Database.Password = os.Getenv("Password")
-	defaultConfig.Database.Name = os.Getenv("Name")
-	common.JWTSecret = os.Getenv("JWTSecret")
-	common.AWS_REGION = os.Getenv("AWS_REGION")
-	common.ACCESS_KEY_ID = os.Getenv("ACCESS_KEY_ID") 
-	common.ACCESS_SECRET_KEY = os.Getenv("AWS_ACCESS_SECRET_KEY")
-	common.SERVER_KEY_MIDTRANS = os.Getenv("SERVER_KEY_MIDTRANS")
+	if isRead {
+		viper.AddConfigPath(".")
+		viper.SetConfigName("local")
+		viper.SetConfigType("env") 
+		err := viper.ReadInConfig()
+		if err != nil {
+			log.Println("error read config : ", err.Error())
+			return nil 
+		} 
+		err = viper.Unmarshal(&app)
+		if err != nil {
+			log.Println("error parse config : ", err.Error())
+		}
+	}
+		JWTKey                   = app.Database.jwtKey
+		AWS_REGION               = app.Database.AWS_REGION
+		ACCESS_KEY_ID            = app.Database.ACCESS_KEY_ID
+		ACCESS_KEY_SECRET        = app.Database.ACCESS_KEY_SECRET
+		SERVER_KEY_MIDTRANS      = app.Database.SERVER_KEY_MIDTRANS
 
-	return &defaultConfig 
+		return &app
 }

@@ -23,7 +23,7 @@ func (s *LelangService) CreateLelangWithBid(lelang lelangs.Core, userID uint) er
 	return nil 
 } 
 
-func (es *LelangService) GetLelangs()([]lelangs.Core, error) {
+func (es *LelangService) GetLelangs() ([]lelangs.Core, error) {
 	lelangs, err := es.r.GetLelangs()
 	if err != nil {
 		return nil, err
@@ -31,8 +31,8 @@ func (es *LelangService) GetLelangs()([]lelangs.Core, error) {
 	return lelangs, nil
 } 
 
-func (es *LelangService) GetLelangsByCategory(category string) ([]lelangs.Core, error){
-	lelangs, err := es.r.GetLelangsByCategory(category)
+func (es *LelangService) GetLelangsByCategory(category string ) ([]lelangs.Core, error) {
+	lelangs , err := es.r.GetLelangsByCategory(category) 
 	if err != nil {
 		return nil, err
 	}

@@ -37,7 +37,7 @@ type RequestCreateLelangWithBid struct {
 } 
 
 type RequestCreateBid struct {
-	BidPrice     int64   `json:"bid_price"`
+	BidPrice     uint   `json:"bid_price"`
 	BidBuyer     string  `json:"bid_buyer"`
-	BidQuantity  int64   `json:"bid_quantity"`
+	BidQuantity  uint   `json:"bid_quantity"`
 }
