@@ -67,6 +67,14 @@ func (er *LelangRepository) GetLelangs() ([]lelangs.Core, error) {
 		return nil, err 
 	}
 	return cores, nil 
+} 
+
+func (er *LelangRepository) GetLelangsByCategory(category string) ([]lelangs.Core, error) {
+	var cores []lelangs.Core 
+	if err := er.db.Table("lelangs").Where("category = ? AND deleted_at IS NULL", category).Find(&cores).Error; err != nil {
+		return nil, err
+	}
+	return cores, nil
 }
 
 func (er *LelangRepository) GetLelangsByUserID(userid uint) ([]lelangs.Core, error) {
