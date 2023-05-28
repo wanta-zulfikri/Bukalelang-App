@@ -5,9 +5,9 @@ import "github.com/labstack/echo/v4"
 type Core struct {
 	ID          uint
 	LelangID    uint
-	BidPrice    int64
+	BidPrice    uint
 	BidBuyer    string
-	BidQuantity int64
+	BidQuantity uint
 }
 
 type LelangCore struct {
